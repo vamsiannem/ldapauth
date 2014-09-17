@@ -3,10 +3,13 @@
  */
 package com.lister.ldap.auth.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * @author vamsikrishna
  *
  */
+@XmlRootElement
 public class User {
 
 	private String displayName;

@@ -8,6 +8,9 @@ import java.util.List;
 import com.lister.ldap.auth.exception.InvalidUserException;
 import com.lister.ldap.auth.model.Group;
 import com.lister.ldap.auth.model.User;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.NotNull;
 
 
 /**
@@ -21,19 +24,20 @@ public interface UserValidationResource {
 
 	/**
 	 * Check if the user is a valid Lister Employee
-	 * @param userId - username 
-	 * @param pwd - user password
-	 * @return {@link User} object if he is a valid lister employee else throw InvalidUserException with a message.
+	 *
+     * @param userId - username
+     * @param pwd - user password
+     * @return {@link User} object if he is a valid lister employee else throw InvalidUserException with a message.
 	 * @throws InvalidUserException 
 	 */
-	User autheticateUser(String userId, String pwd) throws InvalidUserException;
+	User authenticateUser( @NotNull String userId,  @NotNull String pwd) throws InvalidUserException;
 	
 	/**
 	 * Check if the user is part of the Group.
 	 * @param userId
 	 * @return true is user part of the group else return false.
 	 */
-	boolean authorizeUser(String userId, String groupName);
+	boolean authorizeUser(@NotNull String userId, @NotNull String groupName);
 	
 	/**
 	 * Perform both authentication and authorization of a user. 
@@ -42,7 +46,7 @@ public interface UserValidationResource {
 	 * @param groupName
 	 * @return {@link User} object if he is valid else return throw InvalidUserException with a message.
 	 */
-	User validateUser(String userId, String pwd, String groupName);
+	User validateUser(@NotNull String userId, @NotNull String pwd, String groupName, boolean isAuthorizationRequired);
 	
 	
 	

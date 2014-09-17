@@ -3,12 +3,14 @@
  */
 package com.lister.ldap.auth.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * @author vamsikrishna
  *
  */
+@XmlRootElement
 public class Group {
 
 	private String name;

@@ -115,7 +115,7 @@ public class LdapUtil {
 				return false;
 			}
 		});
-		if(usersGroups.get(0)){
+		if( usersGroups!=null && usersGroups.size() > 0 ){
 			return true;
 		}
 		return false;
