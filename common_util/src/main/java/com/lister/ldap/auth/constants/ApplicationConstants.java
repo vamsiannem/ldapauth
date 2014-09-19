@@ -7,6 +7,7 @@ package com.lister.ldap.auth.constants;
  */
 public interface ApplicationConstants {
 	String[] USER_ATTRIBUTES = {"displayName", "email"};
-	String GROUP_ATTIBUTES= "member";
+	String[] GROUP_ATTIBUTES= {"member", "cn"};
+    String LDAP_EX = "LDAP Exception: ";
 	
 }

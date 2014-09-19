@@ -1,7 +1,7 @@
 .idea/**
 .idea/libraries/**
-targert/**
-*.class
+target/**
+**/*.class
 .classpath
 .project
 **/target/**

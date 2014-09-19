@@ -12,14 +12,9 @@
                 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
                         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-    <import resource="classpath:security_config.xml"/>
 	<import resource="classpath:spring_ldap.xml"/>
 
 	<context:annotation-config />
-	<context:component-scan base-package="com.lister.ldap.auth.rest.impl,com.lister.security"></context:component-scan>
-		
-    <bean id="userValidationResourceImpl" class="com.lister.ldap.auth.rest.impl.UserValidationResourceImpl">
-        <property name="ldapUtil" ref="ldapUtil"/>
-    </bean>
+	<context:component-scan base-package="com.lister.ldap.auth.rest.impl"></context:component-scan>
 
 </beans>

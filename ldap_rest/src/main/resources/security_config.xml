@@ -8,33 +8,34 @@
       http://www.springframework.org/schema/beans
       http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
-<!-- Rest authentication entry point configuration -->
-<http use-expressions="true" entry-point-ref="restAuthenticationEntryPoint">
-    <!--<intercept-url pattern="/dba**" access="ROLE_DBA" />-->
-    <sec:form-login
-                    authentication-failure-handler-ref="myFailureHandler" />
+    <!-- Rest authentication entry point configuration -->
+    <http use-expressions="true" entry-point-ref="restAuthenticationEntryPoint" authentication-manager-ref="authenticationManager"
+          create-session="stateless" >
+        <custom-filter ref="restServicesFilter" before="EXCEPTION_TRANSLATION_FILTER" />
+    </http>
 
-    <logout />
-</http>
+    <beans:bean id="restServicesFilter"
+          class="com.lister.ldap.auth.config.security.UsernameAndPwdAuthenticationFilter">
+        <beans:property name="postOnly" value="false" />
+        <beans:property name="authenticationManager" ref="authenticationManager" />
+        <beans:property name="authenticationSuccessHandler" ref="mySuccessHandler"/>
+        <!--<beans:property name="continueChainBeforeSuccessfulAuthentication" value="true"/>-->
+    </beans:bean>
+    <beans:bean id="myFailureHandler"
+                class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" />
+    <beans:bean id="mySuccessHandler" class="com.lister.ldap.auth.config.security.MyAuthSuccessHandler"/>
 
-<!-- Connect the custom authentication success handler -->
-<!--
-<beans:bean id="mySuccessHandler"
-            class="spring.security.rest.api.security.RestAuthenticationSuccessHandler" />
--->
-<!-- Using default failure handler -->
-<beans:bean id="myFailureHandler"
-            class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler" />
+    <!-- Authentication manager -->
+    <authentication-manager alias="authenticationManager" >
+        <authentication-provider>
+            <user-service>
+                <user name="admin" password="@dmin@lister" authorities="ROLE_ADMIN" />
+                <user name="user" password="employee@123" authorities="ROLE_USER" />
+                <user name="system" password="system@123" authorities="ROLE_USER" />
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
 
-<!-- Authentication manager -->
-<authentication-manager alias="authenticationManager">
-    <authentication-provider>
-        <user-service>
-            <user name="temporary" password="temporary" authorities="ROLE_ADMIN" />
-            <user name="user" password="userPass" authorities="ROLE_USER" />
-        </user-service>
-    </authentication-provider>
-</authentication-manager>
+    <global-method-security secured-annotations="enabled" jsr250-annotations="enabled" pre-post-annotations="enabled" />
+</beans:beans>
 
-    <global-method-security secured-annotations="enabled"/>
-    </beans:beans>

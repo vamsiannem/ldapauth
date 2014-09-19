@@ -3,15 +3,9 @@
  */
 package com.lister.ldap.auth.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import com.lister.ldap.auth.constants.ApplicationConstants;
 
 /**
  * @author vamsikrishna
@@ -31,6 +25,14 @@ public class ModelBuilder {
 		return user;
 		
 	}
+
+    public static List<User> getUserModelList(List<Map<String, String>> usersMap){
+        List<User> users = new ArrayList<User>(usersMap.size());
+        for(Map<String, String> userDetail: usersMap){
+            users.add(getUserModel(userDetail));
+        }
+        return users;
+    }
 	
 	private static String getMapValue(Map<String, String> userDetails, String key){
 		return userDetails.get(key)!=null ? userDetails.get(key) : null;

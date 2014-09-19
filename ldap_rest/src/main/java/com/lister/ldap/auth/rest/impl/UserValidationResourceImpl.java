@@ -3,25 +3,26 @@
  */
 package com.lister.ldap.auth.rest.impl;
 
-import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.springframework.context.annotation.Scope;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Component;
-
 import com.lister.ldap.auth.LdapUtil;
 import com.lister.ldap.auth.exception.InvalidUserException;
 import com.lister.ldap.auth.exception.LdapAuthResponses;
 import com.lister.ldap.auth.model.ModelBuilder;
 import com.lister.ldap.auth.model.User;
-import com.lister.ldap.auth.rest.api.UserValidationResource;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
+import org.springframework.context.annotation.Scope;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Rest API to perform user operations with LDAP.
@@ -34,8 +35,11 @@ import com.lister.ldap.auth.rest.api.UserValidationResource;
 @Component
 @Scope("request")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-@Secured("ROLE_ADMIN")
-public class UserValidationResourceImpl implements UserValidationResource {
+@Api(value = "/user/{userId}", description = "Validate a User against Lister's Ldap Server.")
+//@PermitAll
+//@Secured("ROLE_ADMIN")
+
+public class UserValidationResourceImpl /*implements UserValidationResource*/ {
 
     @Resource
     private LdapUtil ldapUtil;
@@ -44,8 +48,15 @@ public class UserValidationResourceImpl implements UserValidationResource {
     /* (non-Javadoc)
      * @see com.lister.ldap.auth.rest.api.LdapResource#autheticateUser(java.lang.String, java.lang.String)
      */
+    @ApiOperation(value = "Authenticate the Given User", notes = "Authenticate user by the password supplied. ")
+    @ApiResponses({
+            @ApiResponse(code = 200 , message = "User is a valid lister employee. Return User details."),
+            @ApiResponse(code = 401 , message = "User credentials are invalid."),
+            @ApiResponse(code = 500 , message = "An internal error has occurred while serving the request."),
+            @ApiResponse(code = 400, message = "Input data validation error, Check the response for more details.")
+    })
     @POST
-    @Path("authenticate")
+    @Path("/authenticate")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public User authenticateUser(@NotNull @PathParam("userId") String userId, @NotNull @FormParam("password") String pwd) throws InvalidUserException{
         try {
@@ -65,8 +76,14 @@ public class UserValidationResourceImpl implements UserValidationResource {
     /* (non-Javadoc)
      * @see com.lister.ldap.auth.rest.api.LdapResource#authorizeUser(java.lang.String, java.lang.String)
      */
+    @ApiOperation(value = "Authorize the User against an LDAP Group.", notes = "Check whether the user is present in the specified Group.")
+    @ApiResponses({
+            @ApiResponse(code = 200 , message = "true if the user is part of the group else it will be false."),
+            @ApiResponse(code = 500 , message = "An internal error has occurred while serving the request."),
+            @ApiResponse(code = 400, message = "Input data validation error, Check the response for more details.")
+    })
     @GET
-    @Path("authorize")
+    @Path("/authorize")
     public boolean authorizeUser( @NotNull @PathParam("userId") String userId, @NotNull @QueryParam("groupName") String groupName) {
         boolean isAuthorizedUser = false;
         try {
@@ -86,8 +103,15 @@ public class UserValidationResourceImpl implements UserValidationResource {
     /* (non-Javadoc)
      * @see com.lister.ldap.auth.rest.api.LdapResource#validateUser(java.lang.String, java.lang.String, java.lang.String)
      */
+    @ApiOperation(value = "Validate the User (Authenticate and authorize).", notes = "Check whether the user is valid.")
+    @ApiResponses({
+            @ApiResponse(code = 200 , message = "User is a valid lister employee. Return User details."),
+            @ApiResponse(code = 500 , message = "An internal error has occurred while serving the request."),
+            @ApiResponse(code = 401 , message = "User credentials are invalid OR he is not part of the specified Group."),
+            @ApiResponse(code = 400, message = "Input data validation error, Check the response for more details.")
+    })
     @POST
-    @Path("validate")
+    @Path("/validate")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public User validateUser(@NotNull @PathParam("userId")String userId, @NotNull @FormParam("password") String pwd,
                              @FormParam("groupName") String groupName, @FormParam("isAuthorizationRequired")@DefaultValue("false") boolean isAuthorizationRequired ) {

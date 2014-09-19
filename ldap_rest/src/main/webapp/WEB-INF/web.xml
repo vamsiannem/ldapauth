@@ -9,6 +9,8 @@
    <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath:applicationContext.xml</param-value>
+       <!-- Use this to enable Role based access on this application.
+       <param-value>classpath:applicationContext-Security.xml</param-value> -->
     </context-param>
 
    <listener>
@@ -29,8 +31,27 @@
         <servlet-name>SPRING-APP</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
+    <!--<servlet>
+        <servlet-name>SwaggerJaxrsConfig</servlet-name>
+        <servlet-class>com.lister.ldap.auth.config.swagger.SwaggerJaxRSConfig</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>-->
+    <servlet>
+        <servlet-name>DefaultJaxrsConfig</servlet-name>
+        <servlet-class>com.wordnik.swagger.jaxrs.config.DefaultJaxrsConfig</servlet-class>
+        <init-param>
+            <param-name>api.version</param-name>
+            <param-value>1.0.0</param-value>
+        </init-param>
+        <init-param>
+            <param-name>swagger.api.basepath</param-name>
+            <param-value>http://localhost:8080/ldap_rest/api</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
 
-    <filter>
+    <!-- Enable this filter if you want Role based access for this application. Refer security_config.xml for more details. -->
+    <!--<filter>
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy
         </filter-class>
@@ -39,6 +60,6 @@
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
+    </filter-mapping>-->
 
 </web-app>
