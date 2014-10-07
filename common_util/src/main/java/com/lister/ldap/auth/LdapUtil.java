@@ -37,7 +37,7 @@ public class LdapUtil {
 
     private String baseDN;
 
-    private static final String MEMBER_OF ="member";
+    private static final String MEMBER_OF = ApplicationConstants.MEMBER_OF;
 
     private String adminGroup;
 
@@ -99,14 +99,14 @@ public class LdapUtil {
      * @return
      */
     public boolean authorizeUser(final String uid, final String group) {
-        final String userDn = getUserDn(uid);
+       // final String userDn = getUserDn(uid);
         LdapQuery query = LdapQueryBuilder.query().base(LdapUtils.emptyLdapName()).attributes(defaultGroupFetchAttr)
-                .where("objectClass").is("groupOfNames").and("cn").is(group).and(MEMBER_OF).like(userDn);
+                .where("objectClass").is("posixGroup").and("cn").is(group).and(MEMBER_OF).like(uid);
         List<Boolean> usersGroups = ldapTemplate.search(query, new AttributesMapper<Boolean>() {
 
             public Boolean mapFromAttributes(Attributes attributes)
                     throws NamingException {
-                if (attributes.get(MEMBER_OF).contains(userDn)) {
+                if (attributes.get(MEMBER_OF).contains(uid)) {
                     return true;
                 }
                 LOGGER.debug("User - {} is not present in the Group - {}", uid, group);
